@@ -1,8 +1,12 @@
 import SkillCard from "@/components/SkillCard";
 
+export const metadata = {
+  title: 'About Me',
+};
+
 export default function About() {
   return (
-    <main className="max-w-4xl mx-auto px-4 py-12">
+    <main className="max-w-4xl mx-auto px-4 py-12 flex-1 flex flex-col">
       <h2 className="text-3xl font-bold mb-4">About Me</h2>
       <p className="text-lg text-gray-700">
               I am a Chemistry graduate and aspiring full-stack developer

@@ -10,7 +10,7 @@ export default function RootLayout({
   }) {
   return (
     <html lang="en">
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-screen flex flex-col">
         <Header />
         {children}
         <Suspense fallback={<footer className="py-4 mt-12 text-center bg-gray-800 text-white">Cargando...</footer>}>
