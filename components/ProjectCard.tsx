@@ -15,10 +15,11 @@ export default function ProjectCard({ project }: ProjectCardProps) {
         {project.description}
       </p>
       <div className="mt-4 flex flex-wrap gap-2">
+        <strong>Technologies:</strong> 
         {project.technologies.map((technology) => (
           <span
             key={technology}
-            className="rounded-full px-3 py-1 text-sm text-gray-600"
+            className="rounded-full px-3 py-1 text-sm italic text-gray-600"
           >
             {technology}
           </span>

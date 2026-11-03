@@ -13,7 +13,13 @@ export default function RootLayout({
       <body className="min-h-screen flex flex-col">
         <Header />
         {children}
-        <Suspense fallback={<footer className="py-4 mt-12 text-center bg-gray-800 text-white">Cargando...</footer>}>
+        <Suspense
+          fallback={
+            <footer
+              className="py-4 mt-12 text-center bg-gray-800 text-white">
+              Cargando...
+            </footer>
+        }>
           <Footer />
         </Suspense>
       </body>

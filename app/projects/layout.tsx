@@ -1,13 +1,9 @@
-import Link from "next/link";
+import ProjectsNav from "@/components/ProjectsNav";
 
 export default function ProjectsLayout({ children }: { children: React.ReactNode }) {
     return (
-        <section>
-            <nav>
-                <Link href="/projects">Overview</Link> | {" "}
-                <Link href="/projects/opensource">Open Source</Link> | {" "}
-                <Link href="/projects/school">School</Link> | {" "}
-            </nav>
+        <section className="max-w-6xl mx-auto px-4 py-8 flex-1 w-full">
+            <ProjectsNav />
             {children}
         </section>
     );

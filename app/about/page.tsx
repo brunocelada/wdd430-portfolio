@@ -1,4 +1,5 @@
 import SkillCard from "@/components/SkillCard";
+import { skills } from "@/lib/skills";
 
 export const metadata = {
   title: 'About Me',
@@ -14,15 +15,13 @@ export default function About() {
           </p>
           
           <div className="grid gap-6 md:grid-cols-2">
-            <SkillCard
-              title="Programming"
-              skills={["JavaScript", "Python", "C++", "Java", "React", "Next.js", "Node.js", "Express", "MongoDB", "SQL"]}
-              />
-              
-              <SkillCard
-              title="Chemistry"
-              skills={["Organic Chemistry", "Inorganic Chemistry", "Physical Chemistry", "Computational Chemistry", "Machine Learning", "Scikit-learn"]}
-            />
+            {skills.map((category) => (
+          <SkillCard
+            key={category.subject}
+            title={category.subject}
+            skills={category.skills}
+          />
+        ))}
           </div>
         </main>
       );
