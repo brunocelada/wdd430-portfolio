@@ -1,21 +1,13 @@
 import ProjectList from "@/components/ProjectList";
 import { Suspense } from "react";
+import { getProjects } from "@/lib/projects-db";
 
 export const metadata = {
   title: 'Projects',
 };
 
 async function ProjectsContent() {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/projects`,
-      { cache: "no-store" }
-    );
-
-    if (!response.ok) {
-      throw new Error("Failed to fetch projects");
-    }
-
-    const projects = await response.json();
+    const projects = await getProjects();
     return <ProjectList projects={projects} />;
 }
 

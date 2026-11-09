@@ -1,22 +1,13 @@
 import { Suspense } from "react";
 import ProjectList from "@/components/ProjectList";
+import { getProjects } from "@/lib/projects-db";
 
 export const metadata = {
   title: 'School Projects',
 };
 
 async function SchoolProjectsContent() {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/projects?type=school`,
-    { cache: "no-store" }
-  );
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch school projects");
-  }
-
-  const projects = await response.json();
-
+  const projects = await getProjects("school");
   return <ProjectList projects={projects} />;
 }
 
