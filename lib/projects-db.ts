@@ -1,3 +1,5 @@
+import { sql } from '@vercel/postgres';
+
 export interface Project {
   id: number;
   title: string;
@@ -7,38 +9,56 @@ export interface Project {
   link?: string;
 }
 
-export const projects: Project[] = [
-  {
-    id: 1,
-    title: "PaperLens",
-    description: "Scientific literature manager.",
-    type: "opensource",
-    technologies: ["HTML", "JavaScript", "CSS", "Node.js"],
-    link: "https://github.com/brunocelada/wdd330-paperLens",
-  },
-  {
-    id: 2,
-    title: "Career UNR API",
-    description: "A collection of degree programs from the UNR.",
-    type: "school",
-    technologies: ["HTML", "JavaScript", "CSS", "Node.js"],
-    link: "https://github.com/brunocelada/cse341-unr",
-  },
-  {
-    id: 3,
-    title: "Sleep Outside",
-    description: "E-commerce application.",
-    type: "school",
-    technologies: ["JavaScript", "HTML", "CSS"],
-    link: "https://github.com/brunocelada/wdd330-sleepoutside",
+export async function getProjects(type?: string | null): Promise<Project[]> {
+  if (type) {
+    const { rows } = await sql<Project>`
+      SELECT * FROM projects WHERE type = ${type} ORDER BY id
+    `;
+    return rows;
   }
-];
-
-export function getProjects(type?: string | null): Project[] {
-  if (type) return projects.filter(p => p.type === type);
-  return projects;
+  const { rows } = await sql<Project>`SELECT * FROM projects ORDER BY id`;
+  return rows;
 }
 
-export function getProjectById(id: number): Project | null {
-  return projects.find(p => p.id === id) ?? null;
+export async function getProjectById(id: number): Promise<Project | null> {
+  const { rows } = await sql<Project>`
+    SELECT * FROM projects WHERE id = ${id}
+  `;
+  return rows[0] ?? null;
 }
+
+// export const projects: Project[] = [
+//   {
+//     id: 1,
+//     title: "PaperLens",
+//     description: "Scientific literature manager.",
+//     type: "opensource",
+//     technologies: ["HTML", "JavaScript", "CSS", "Node.js"],
+//     link: "https://github.com/brunocelada/wdd330-paperLens",
+//   },
+//   {
+//     id: 2,
+//     title: "Career UNR API",
+//     description: "A collection of degree programs from the UNR.",
+//     type: "school",
+//     technologies: ["HTML", "JavaScript", "CSS", "Node.js"],
+//     link: "https://github.com/brunocelada/cse341-unr",
+//   },
+//   {
+//     id: 3,
+//     title: "Sleep Outside",
+//     description: "E-commerce application.",
+//     type: "school",
+//     technologies: ["JavaScript", "HTML", "CSS"],
+//     link: "https://github.com/brunocelada/wdd330-sleepoutside",
+//   }
+// ];
+
+// export function getProjects(type?: string | null): Project[] {
+//   if (type) return projects.filter(p => p.type === type);
+//   return projects;
+// }
+
+// export function getProjectById(id: number): Project | null {
+//   return projects.find(p => p.id === id) ?? null;
+// }

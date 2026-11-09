@@ -1,12 +1,15 @@
 import ProjectList from "@/components/ProjectList";
-import { projects } from "@/lib/projects-db";
+import { getProjects } from "@/lib/projects-db";
 
 export const metadata = {
   title: 'Home',
 };
 
-export default function Home() { 
+export const instant = false;
+
+export default async function Home() { 
   // Show only the first 2 projects as featured projects
+  const projects = await getProjects();
   const featuredProjects = projects.slice(0, 2);
 
   return (
