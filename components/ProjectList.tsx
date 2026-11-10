@@ -1,5 +1,5 @@
-import ProjectCard from './ProjectCard';
-import type { Project } from '@/lib/projects-db';
+import ProjectCard from "./ProjectCard";
+import type { Project } from "@/lib/projects-db";
 
 interface ProjectListProps {
   projects: Project[];

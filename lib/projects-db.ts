@@ -1,10 +1,10 @@
-import { sql } from '@vercel/postgres';
+import { sql } from "@vercel/postgres";
 
 export interface Project {
   id: number;
   title: string;
   description: string;
-  type: 'opensource' | 'school';
+  type: "opensource" | "school";
   technologies: string[];
   link?: string;
 }
