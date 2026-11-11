@@ -26,7 +26,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
         href={project.link ?? "#"}
         target="_blank"
         rel="noopener noreferrer"
-        className="mt-2 inline-block text-blue-600 hover:underline"
+        className="mt-2 inline-block text-blue-800 hover:underline"
       >
         View project
       </Link>

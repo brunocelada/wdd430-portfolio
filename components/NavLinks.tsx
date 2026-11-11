@@ -25,8 +25,8 @@ export default function NavLinks() {
           <li key={link.href}>
             <Link
               href={link.href}
-              className={`transition-colors hover:text-blue-400 ${
-                isActive ? "text-blue-400 font-semibold" : "text-white"
+              className={`transition-colors hover:text-blue-300 ${
+                isActive ? "text-blue-200 font-semibold" : "text-white"
               }`}
               aria-current={isActive ? "page" : undefined}
             >
