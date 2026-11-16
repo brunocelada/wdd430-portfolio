@@ -1,5 +1,6 @@
 import { Project } from "@/lib/projects-db";
 import Link from "next/link";
+import DeleteProjectButton from "@/components/DeleteProjectButton";
 
 interface ProjectCardProps {
   project: Project;
@@ -22,14 +23,32 @@ export default function ProjectCard({ project }: ProjectCardProps) {
         ))}
       </div>
 
-      <Link
-        href={project.link ?? "#"}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="mt-2 inline-block text-blue-800 hover:underline"
-      >
-        View project
-      </Link>
+      {project.link ? (
+  <Link
+    href={project.link}
+    target="_blank"
+    rel="noopener noreferrer"
+    className="mt-2 inline-block text-blue-800 hover:underline"
+  >
+    View project
+  </Link>
+) : (
+  <span className="mt-2 inline-block italic text-gray-500">
+    No link
+  </span>
+)}
+
+      {/* UPDATE or DELETE project */}
+      <div className="mt-4 flex items-center gap-3">
+        <Link
+          href={`/projects/${project.id}/edit`}
+          className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+        >
+          Update
+        </Link>
+
+        <DeleteProjectButton projectId={project.id} />
+      </div>
     </article>
   );
 }

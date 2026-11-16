@@ -19,19 +19,13 @@ interface ProjectsPageProps {
   }>;
 }
 
-async function ProjectsContent({
-  searchParams,
-}: ProjectsPageProps) {
-const params = await searchParams;
+async function ProjectsContent({ searchParams }: ProjectsPageProps) {
+  const params = await searchParams;
 
-  const rawQuery = Array.isArray(params.query)
-    ? params.query[0]
-    : params.query;
+  const rawQuery = Array.isArray(params.query) ? params.query[0] : params.query;
   const query = sanitizeSearchQuery(rawQuery);
 
-  const rawPage = Array.isArray(params.page)
-    ? params.page[0]
-    : params.page;
+  const rawPage = Array.isArray(params.page) ? params.page[0] : params.page;
   const currentPage =
     rawPage && /^\d+$/.test(rawPage) && Number(rawPage) > 0
       ? Number(rawPage)
@@ -55,9 +49,7 @@ export default async function ProjectsPage({
 }: ProjectsPageProps) {
   return (
     <main className="container mx-auto px-4 py-12 flex-1 flex flex-col">
-      <h1 className="text-4xl font-bold mb-4">
-        Projects Overview
-      </h1>
+      <h1 className="text-4xl font-bold mb-4">Projects Overview</h1>
 
       <Suspense fallback={<div>Loading search...</div>}>
         <ProjectSearch />

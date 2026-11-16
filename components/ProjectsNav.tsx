@@ -7,6 +7,7 @@ const links = [
   { href: "/projects", label: "Overview" },
   { href: "/projects/opensource", label: "Open Source" },
   { href: "/projects/school", label: "School" },
+  { href: "/projects/create", label: "Create" },
 ];
 
 export default function ProjectsNav() {

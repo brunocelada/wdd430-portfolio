@@ -35,11 +35,10 @@ export async function getProjectById(id: number): Promise<Project | null> {
 
 export async function fetchFilteredProjects(
   query: string,
-  currentPage: number
+  currentPage: number,
 ): Promise<Project[]> {
-  const page = Number.isInteger(currentPage) && currentPage > 0
-    ? currentPage
-    : 1;
+  const page =
+    Number.isInteger(currentPage) && currentPage > 0 ? currentPage : 1;
   const offset = (page - 1) * ITEMS_PER_PAGE;
 
   const projects = await sql<Project>`
