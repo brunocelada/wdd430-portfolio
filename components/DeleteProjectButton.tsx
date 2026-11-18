@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from "react";
@@ -39,8 +38,8 @@ export default function DeleteProjectButton({
             </h2>
 
             <p className="mt-2 text-sm text-slate-600">
-              Are you sure you want to delete this project?
-              This action cannot be undone.
+              Are you sure you want to delete this project? This action cannot
+              be undone.
             </p>
 
             <div className="mt-6 flex justify-end gap-3">
@@ -53,11 +52,7 @@ export default function DeleteProjectButton({
               </button>
 
               <form action={deleteProject}>
-                <input
-                  type="hidden"
-                  name="id"
-                  value={projectId}
-                />
+                <input type="hidden" name="id" value={projectId} />
 
                 <button
                   type="submit"

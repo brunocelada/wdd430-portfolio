@@ -8,6 +8,7 @@ export interface Project {
   description: string;
   type: "opensource" | "school";
   technologies: string[];
+  yearCompleted: number;
   link?: string;
 }
 
@@ -18,17 +19,23 @@ export function sanitizeSearchQuery(query?: string): string {
 export async function getProjects(type?: string | null): Promise<Project[]> {
   if (type) {
     const { rows } = await sql<Project>`
-      SELECT * FROM projects WHERE type = ${type} ORDER BY id
+      SELECT *,
+  year_completed AS "yearCompleted"
+  FROM projects WHERE type = ${type} ORDER BY id
     `;
     return rows;
   }
-  const { rows } = await sql<Project>`SELECT * FROM projects ORDER BY id`;
+  const { rows } = await sql<Project>`SELECT *,
+  year_completed AS "yearCompleted"
+   FROM projects ORDER BY id`;
   return rows;
 }
 
 export async function getProjectById(id: number): Promise<Project | null> {
   const { rows } = await sql<Project>`
-    SELECT * FROM projects WHERE id = ${id}
+    SELECT *,
+  year_completed AS "yearCompleted"
+   FROM projects WHERE id = ${id}
   `;
   return rows[0] ?? null;
 }
@@ -42,7 +49,9 @@ export async function fetchFilteredProjects(
   const offset = (page - 1) * ITEMS_PER_PAGE;
 
   const projects = await sql<Project>`
-  SELECT *
+  SELECT *,
+  year_completed AS "yearCompleted"
+  
   FROM projects
   WHERE
       title ILIKE ${`%${query}%`}
@@ -77,39 +86,3 @@ export async function fetchProjectsPages(query: string) {
 
   return Math.ceil(count / ITEMS_PER_PAGE);
 }
-
-// export const projects: Project[] = [
-//   {
-//     id: 1,
-//     title: "PaperLens",
-//     description: "Scientific literature manager.",
-//     type: "opensource",
-//     technologies: ["HTML", "JavaScript", "CSS", "Node.js"],
-//     link: "https://github.com/brunocelada/wdd330-paperLens",
-//   },
-//   {
-//     id: 2,
-//     title: "Career UNR API",
-//     description: "A collection of degree programs from the UNR.",
-//     type: "school",
-//     technologies: ["HTML", "JavaScript", "CSS", "Node.js"],
-//     link: "https://github.com/brunocelada/cse341-unr",
-//   },
-//   {
-//     id: 3,
-//     title: "Sleep Outside",
-//     description: "E-commerce application.",
-//     type: "school",
-//     technologies: ["JavaScript", "HTML", "CSS"],
-//     link: "https://github.com/brunocelada/wdd330-sleepoutside",
-//   }
-// ];
-
-// export function getProjects(type?: string | null): Project[] {
-//   if (type) return projects.filter(p => p.type === type);
-//   return projects;
-// }
-
-// export function getProjectById(id: number): Project | null {
-//   return projects.find(p => p.id === id) ?? null;
-// }

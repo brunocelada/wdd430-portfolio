@@ -4,33 +4,63 @@ import { sql } from "@vercel/postgres";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { ProjectFormSchema } from "./validations";
-import { format } from "path";
 
-export async function createProject(formData: FormData) {
-  const validateFields = ProjectFormSchema.safeParse({
+export type ProjectFormState = {
+  errors?: {
+    title?: string[];
+    description?: string[];
+    type?: string[];
+    technologies?: string[];
+    yearCompleted?: string[];
+    link?: string[];
+  };
+  message?: string | null;
+  values?: {
+    title?: string;
+    description?: string;
+    type?: string;
+    technologies?: string;
+    yearCompleted?: string;
+    link?: string;
+  };
+};
+
+export async function createProject(
+  _prevState: ProjectFormState,
+  formData: FormData,
+): Promise<ProjectFormState> {
+  const validatedFields = ProjectFormSchema.safeParse({
     title: formData.get("title"),
     description: formData.get("description"),
     technologies: formData.get("technologies"),
+    yearCompleted: formData.get("yearCompleted"),
+    type: formData.get("type"),
     link: formData.get("link"),
   });
 
-  if (!validateFields.success) {
-    console.error(validateFields.error.flatten().fieldErrors);
-    throw new Error("Invalid project data.");
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: "Please correct any remaining errors.",
+      values: {
+      title: String(formData.get("title") ?? ""),
+      description: String(formData.get("description") ?? ""),
+      type: String(formData.get("type") ?? ""),
+      technologies: String(formData.get("technologies") ?? ""),
+      yearCompleted: String(formData.get("yearCompleted") ?? ""),
+        link: String(formData.get("link") ?? ""),
+      },
+    };
   }
 
   const {
     title,
     description,
+    type,
     technologies: technologiesInput,
+    yearCompleted,
     link,
-  } = validateFields.data;
-
-  const type = formData.get("type");
-
-  if (type !== "opensource" && type !== "school") {
-    throw new Error("Invalid project type.");
-  }
+  } = validatedFields.data;
 
   const technologies = technologiesInput
     .split(",")
@@ -38,54 +68,78 @@ export async function createProject(formData: FormData) {
     .filter(Boolean);
 
   if (technologies.length === 0) {
-    throw new Error("At least one technology is required.");
+    return {
+      errors: {
+        technologies: ["At least one technology is required."],
+      },
+      message: "Please correct any remaining errors.",
+    };
   }
 
-  await sql.query(
-    `INSERT INTO projects (
+  try {
+    await sql.query(
+      `INSERT INTO projects (
       title,
       description,
       type,
       technologies,
+      year_completed,
       link
     )
-    VALUES ($1, $2, $3, $4, $5)`,
-    [title, description, type, technologies, link || null],
-  );
+    VALUES ($1, $2, $3, $4, $5, $6)`,
+      [title, description, type, technologies, yearCompleted, link || null],
+    );
+  } catch {
+    return {
+      message: "Database Error: Failed to create project.",
+    };
+  }
 
   revalidatePath("/projects");
   redirect("/projects");
 }
 
-export async function updateProject(id: number, formData: FormData) {
+export async function updateProject(
+  id: number,
+  _prevState: ProjectFormState,
+  formData: FormData,
+): Promise<ProjectFormState> {
   if (!Number.isInteger(id) || id <= 0) {
-    throw new Error("Invalid project ID.");
+    return { message: "Invalid project ID." };
   }
 
   const validatedFields = ProjectFormSchema.safeParse({
     title: formData.get("title"),
     description: formData.get("description"),
     technologies: formData.get("technologies"),
+    yearCompleted: formData.get("yearCompleted"),
+    type: formData.get("type"),
     link: formData.get("link"),
   });
 
   if (!validatedFields.success) {
-    console.error(validatedFields.error.flatten().fieldErrors);
-    throw new Error("Invalid project data.");
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: "Please correct any remaining errors.",
+      values: {
+      title: String(formData.get("title") ?? ""),
+      description: String(formData.get("description") ?? ""),
+      type: String(formData.get("type") ?? ""),
+      technologies: String(formData.get("technologies") ?? ""),
+      yearCompleted: String(formData.get("yearCompleted") ?? ""),
+      link: String(formData.get("link") ?? ""),
+    },
+    };
   }
 
   const {
     title,
     description,
+    type,
     technologies: technologiesInput,
+    yearCompleted,
     link,
   } = validatedFields.data;
-
-  const type = formData.get("type");
-
-  if (type !== "opensource" && type !== "school") {
-    throw new Error("Invalid project type.");
-  }
 
   const technologies = technologiesInput
     .split(",")
@@ -93,27 +147,40 @@ export async function updateProject(id: number, formData: FormData) {
     .filter(Boolean);
 
   if (technologies.length === 0) {
-    throw new Error("At least one technology is required.");
+    return {
+      errors: {
+        technologies: ["At least one technology is required."],
+      },
+      message: "Please correct any remaining errors.",
+    };
   }
-
-  const result = await sql.query(
-    `UPDATE projects
+  let result;
+  try {
+    result = await sql.query(
+      `UPDATE projects
      SET
        title = $1,
        description = $2,
        type = $3,
        technologies = $4,
-       link = $5
-     WHERE id = $6`,
-    [title, description, type, technologies, link || null, id],
-  );
+       year_completed = $5,
+       link = $6
+     WHERE id = $7`,
+      [title, description, type, technologies, yearCompleted, link || null, id],
+    );
+  } catch {
+    return {
+      message: "Database Error: Failed to update project.",
+    };
+  }
 
   if (result.rowCount === 0) {
-    throw new Error("Project not found.");
+    return { message: "Project not found." };
   }
 
   revalidatePath("/projects");
-  revalidatePath(`/projects/${id}`);
+  revalidatePath(`/projects/${id}/edit`);
+  
 
   redirect("/projects");
 }
