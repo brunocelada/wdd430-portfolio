@@ -4,6 +4,7 @@ import { useActionState } from "react";
 import Link from "next/link";
 import { initialProjectState } from "@/lib/project-form-state";
 import { updateProject } from "@/lib/actions";
+import type { Project } from "@/lib/projects-db";
 
 interface EditProjectFormProps {
   project: Project;

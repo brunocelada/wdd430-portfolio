@@ -4,6 +4,8 @@ import { sql } from "@vercel/postgres";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { ProjectFormSchema } from "./validations";
+import { signIn, auth } from "@/auth";
+import { AuthError } from "next-auth";
 
 export type ProjectFormState = {
   errors?: {
@@ -25,10 +27,38 @@ export type ProjectFormState = {
   };
 };
 
+export async function authenticate(
+  prevState: string | undefined,
+  formData: FormData,
+) {
+  try {
+    await signIn("credentials", formData);
+  } catch (error) {
+    if (error instanceof AuthError) {
+      switch (error.type) {
+        case "CredentialsSignin":
+          return "Invalid email or password.";
+        default:
+          return "Something went wrong.";
+      }
+    }
+    throw error;
+  }
+}
+
+async function requireOwnerSession() {
+  const session = await auth();
+  if (!session?.user) throw new Error("Not authenticated");
+  return session;
+}
+
+
 export async function createProject(
   _prevState: ProjectFormState,
   formData: FormData,
 ): Promise<ProjectFormState> {
+  await requireOwnerSession();
+
   const validatedFields = ProjectFormSchema.safeParse({
     title: formData.get("title"),
     description: formData.get("description"),
@@ -104,6 +134,8 @@ export async function updateProject(
   _prevState: ProjectFormState,
   formData: FormData,
 ): Promise<ProjectFormState> {
+  await requireOwnerSession();
+
   if (!Number.isInteger(id) || id <= 0) {
     return { message: "Invalid project ID." };
   }
@@ -186,6 +218,8 @@ export async function updateProject(
 }
 
 export async function deleteProject(formData: FormData) {
+  await requireOwnerSession();
+  
   const id = Number(formData.get("id"));
 
   if (!Number.isInteger(id) || id <= 0) {

@@ -2,21 +2,30 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
 
-const links = [
+const projectLinks = [
   { href: "/projects", label: "Overview" },
   { href: "/projects/opensource", label: "Open Source" },
   { href: "/projects/school", label: "School" },
-  { href: "/projects/create", label: "Create" },
 ];
 
 export default function ProjectsNav() {
   const pathname = usePathname();
+  const { status } = useSession();
+  const isAuthenticated = status === "authenticated";
+  
+  const visibleLinks = [
+    ...projectLinks,
+    ...(isAuthenticated
+      ? [{ href: "/dashboard/projects/new", label: "Create" }]
+      : []),
+  ];
 
   return (
     <nav>
       <ul className="flex flex-wrap gap-2 border-b border-gray-200 mb-8">
-        {links.map((link) => {
+        {visibleLinks.map((link) => {
           const isActive = pathname === link.href;
 
           return (
